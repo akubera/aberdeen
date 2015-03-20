@@ -98,8 +98,12 @@ def upload_posts_to_database(posts):
     """
     from pymongo import MongoClient
     # from pprint import pprint
-    mongo = MongoClient()
     cfg = config['mongo']
+    if 'username' in cfg and 'password' in cfg:
+        host = '%s:%s@%s' % map(cfg.get, ['username', 'password', 'host'])
+    else:
+        host = cfg.get('host', '127.0.0.1')
+    mongo = MongoClient(host, cfg.get('port'), tz_aware=True)
     db_name = cfg.get('database')
     coll_name = cfg['collection']
     db = mongo[db_name]
