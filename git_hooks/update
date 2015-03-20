@@ -34,7 +34,7 @@ if branch.split('/')[-1] == 'publish':
         {'name': line.split()[3], 'blob': line.split()[2]}
         for line in allfiles if line.split('\t')[-1] in changed_filenames
     ]
-    print (files_changed)
+    # print (files_changed)
     errors = []
     for file in files_changed:
         print("Testing:", file['name'], end=' ')
@@ -42,22 +42,19 @@ if branch.split('/')[-1] == 'publish':
         markdown = aberdeen.call_git(cat_cmd.split())
     #    print (" contents:\n----\n", markdown, "----")
         try:
-            gens = aberdeen.generate_from_markdown(markdown)
+            aberdeen.generate_from_markdown(markdown)
             print(c('✓').green)
         except Exception as err:
             print(c('✗').red)
-            err = ("There was an error generating a post from file '%s'.\n"
-                   "\n%s\n\n"
-                   "The commit was NOT accepted. Please fix the file and push "
-                   "the changes again. \n" %
-                   (file['name'],  c('ERROR: ').red + str(err)))
+            err = "  %s\n%s\n" % (file['name'], str(err))
             errors.append(err)
-            stop = True
-    print("")
+
     if errors:
+        print("Errors:")
         print("\n".join(errors))
+        print(("** The commit was NOT accepted. Please fix the issues and "
+               "push the changes again.\n"))
         sys.exit(1)
 
     print ("No Errors found, continuing.")
-
     sys.exit(1)

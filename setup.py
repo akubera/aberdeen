@@ -6,12 +6,13 @@
 from setuptools import setup
 import aberdeen
 REQUIRES = [
-    'emojize'
+    'emojize',
+    'termcolor2'
 ]
 
 OPTIONAL_REQUIRES = {
     'markdown': ['Markdown'],
-    'mongodb': ['asyncio_mongo']
+    'mongodb': ['pymongo','asyncio_mongo']
 }
 
 KEYWORDS = [

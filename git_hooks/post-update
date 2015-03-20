@@ -21,6 +21,29 @@ for ref_name in argv[1:]:
 
     # with open("$HOME/postupdate.log", 'r+') as log:
     print ("Update pushed to branch %s" % (branch))
-
     if branch == 'publish':
-        pass
+        # filenames = ab.call_git('ls-tree --full-tree --name-only -r publish')
+        ls_tree_cmd = 'ls-tree --full-name -r publish'
+        all_files = ab.call_git(ls_tree_cmd).strip()
+        files = [
+            {'name': line.split()[3], 'blob': line.split()[2]}
+            for line in all_files.split('\n')
+        ]
+
+        markdown_suffix = ['.md','.markdown']
+        html_suffix = ['.html','.htm']
+        posts = []
+        for file in files:
+            filename = file['name']
+            blob_id = file['blob']
+            # if any([filename.endswith(md) for md in markdown_suffix]):
+            if any(map(filename.endswith, markdown_suffix)):
+                contents = ab.call_git(['cat-file', 'blob', blob_id])
+                posts.append(ab.generate_from_markdown(contents))
+            elif any(map(filename.endswith, html_suffix)):
+                pass
+
+        print ("generated %d posts" % (len(posts)))
+
+        ab.upload_posts_to_database(posts)
+        print ("Successfully uploaded posts to database.")

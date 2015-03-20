@@ -6,16 +6,23 @@
 A static file CMS generator
 """
 __author__ = "Andrew Kubera"
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 __license__ = "Apache 2.0"
 __contact__ = 'andrew.kubera@gmail.com'
 __homepage__ = 'https://github.com/akubera/aberdeen'
 
-import json
 import sys
 
-from glob import glob
+from configparser import ConfigParser
+config = ConfigParser()
+config['mongo'] = {
+    'host': 'localhost',
+    'port': '27017',
+    'database': 'aberdeen_blog',
+    'collection': 'blog_posts'
+}
 
+config.read(['aberdeen.cfg'])
 
 def call_git(args, verbose=False):
     """
@@ -56,6 +63,10 @@ def generate_from_markdown(src):
     @param src str: The plaintext markdown string.
     @return dict: Dictionary with header objects and 'html_content'
     """
+    from termcolor2 import c
+
+    REDERR = c('ERROR: ').red
+
     from markdown import Markdown
     md = Markdown(extensions=['markdown.extensions.meta'])
     html = md.convert(src)
@@ -76,16 +87,36 @@ def generate_from_markdown(src):
 
     res['html_content'] = html
     if 'date' not in res:
-        raise Exception("No 'date' component found in post.")
+        raise Exception("    "+REDERR+"No 'date' component found in post.")
     return res
+
+def upload_posts_to_database(posts):
+    """
+    Uploads the list of items to the database as specified by the configuration
+    file.
+    @param posts: list of dicts containing post objects
+    """
+    from pymongo import MongoClient
+    # from pprint import pprint
+    mongo = MongoClient()
+    cfg = config['mongo']
+    db_name = cfg.get('database')
+    coll_name = cfg['collection']
+    db = mongo[db_name]
+    db[coll_name].find()
+    # pprint([i for i in post_ids])
+    db.drop_collection(coll_name)
+    collection = db[coll_name]
+    collection.insert(posts)
+    # pprint(post_ids)
 
 
 def main(args):
     """The 'main' function called when executing aberdeen"""
-    from markdown import Markdown
     if len(args) == 0:
-        print ("DEFAULT")
-
+        print ("Aberdeen!!")
+    else:
+        pass
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main(sys.argv[1:])
