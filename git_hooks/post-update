@@ -10,18 +10,17 @@ repository. Also, add a configuration file to tell aberdeen where to send
 the generated blog posts.
 """
 
-from subprocess import check_output as shell
 from sys import argv
+import aberdeen as ab
 
 print("===post-update===")
 print ("Args:", argv)
 
 for ref_name in argv[1:]:
-    get_branch = ['git', 'rev-parse', '--symbolic', '--abbrev-ref', ref_name]
-    branch = shell(get_branch).decode()
+    branch = ab.call_git(['rev-parse', '--symbolic', '--abbrev-ref', ref_name])
 
     # with open("$HOME/postupdate.log", 'r+') as log:
     print ("Update pushed to branch %s" % (branch))
 
     if branch == 'publish':
-        import aberdeen
+        pass

@@ -16,6 +16,68 @@ import sys
 
 from glob import glob
 
+
+def call_git(args, verbose=False):
+    """
+    Helper function for calling a 'git' command.
+    @param args: list of arguments to the git shell script.
+    @return string stdout of git
+    """
+    from subprocess import check_output
+    if isinstance(args,str):
+        args = args.split()
+    if verbose:
+        print ("[call_git] << git ", ' '.join(args))
+    res = check_output(['git'] + args)
+    if verbose:
+        print ("[call_git] >> {}".format(res))
+    return res.decode()
+
+
+def determine_time(timestr):
+    """Deterimes a time based on a string."""
+    from time import strptime
+    formats = ["%b %d, %Y"]
+    res = None
+    for frm in formats:
+        try:
+            res = strptime(timestr, frm)
+        except ValueError:
+            continue
+    if not res:
+        raise "Time value could not be determined from time string '%s'" % \
+            (timestr)
+    return res
+
+
+def generate_from_markdown(src):
+    """
+    Generates a blogpost from a markdown script, src.
+    @param src str: The plaintext markdown string.
+    @return dict: Dictionary with header objects and 'html_content'
+    """
+    from markdown import Markdown
+    md = Markdown(extensions=['markdown.extensions.meta'])
+    html = md.convert(src)
+    # copy the metadata
+    res = {}
+    for key, val in md.Meta:
+        if len(val) == 1:
+            # prefix lists with '@'
+            if key[0] == '@':
+                res[key[1:]] = val
+            # special case for 'tag'
+            elif key in ['tags', 'tag']:
+                res[key] = val
+            else:
+                res[key] = val[0]
+        else:
+            res[key] = val
+
+    res['html_content'] = html
+    return res
+
+
 def main(args):
     """The 'main' function called when executing aberdeen"""
     from markdown import Markdown

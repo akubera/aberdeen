@@ -6,7 +6,7 @@
 from setuptools import setup
 import aberdeen
 REQUIRES = [
-
+    'emojize'
 ]
 
 OPTIONAL_REQUIRES = {
@@ -22,7 +22,7 @@ KEYWORDS = [
 ]
 
 CLASSIFIERS = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.4",
     'Topic :: Utilities',
