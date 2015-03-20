@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+#
+# update
+#
+# The 'update' git hook for verifying the publish branch
+#
+"""
+To use this, copy this file into the 'hooks' directory in your server's git
+repository. Also, add a configuration file to tell aberdeen where to send
+the generated blog posts.
+"""
+
+import sys
+
+print("===update===")
+print ("Args:", sys.argv)
+
+branch, old_commit, new_commit = sys.argv[1:4]
+
+if branch == 'publish':
+    import aberdeen
