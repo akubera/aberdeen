@@ -61,7 +61,7 @@ def generate_from_markdown(src):
     html = md.convert(src)
     # copy the metadata
     res = {}
-    for key, val in md.Meta:
+    for key, val in md.Meta.items():
         if len(val) == 1:
             # prefix lists with '@'
             if key[0] == '@':
@@ -75,6 +75,8 @@ def generate_from_markdown(src):
             res[key] = val
 
     res['html_content'] = html
+    if 'date' not in res:
+        raise Exception("No 'date' component found in post.")
     return res
 
 
