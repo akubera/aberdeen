@@ -103,7 +103,7 @@ def upload_posts_to_database(posts):
         host = '%s:%s@%s' % map(cfg.get, ['username', 'password', 'host'])
     else:
         host = cfg.get('host', '127.0.0.1')
-    mongo = MongoClient(host, cfg.get('port'), tz_aware=True)
+    mongo = MongoClient(host, int(cfg.get('port')), tz_aware=True)
     db_name = cfg.get('database')
     coll_name = cfg['collection']
     db = mongo[db_name]

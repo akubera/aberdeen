@@ -37,7 +37,7 @@ if branch.split('/')[-1] == 'publish':
     # print (files_changed)
     errors = []
     for file in files_changed:
-        print("Testing:", file['name'], end=' ')
+        print("Testing", file['name'], end=' ')
         cat_cmd = "cat-file blob " + file['blob']
         markdown = aberdeen.call_git(cat_cmd.split())
     #    print (" contents:\n----\n", markdown, "----")
@@ -57,4 +57,3 @@ if branch.split('/')[-1] == 'publish':
         sys.exit(1)
 
     print ("No Errors found, continuing.")
-    sys.exit(1)
