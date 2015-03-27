@@ -6,7 +6,7 @@
 from setuptools import setup
 import aberdeen
 REQUIRES = [
-    'emojize',
+    'emoji',
     'termcolor2'
 ]
 
