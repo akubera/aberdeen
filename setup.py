@@ -39,5 +39,7 @@ setup(
     keywords=KEYWORDS,
     classifiers=CLASSIFIERS,
     install_requires=REQUIRES,
-    extras_require=OPTIONAL_REQUIRES
+    extras_require=OPTIONAL_REQUIRES,
+    scripts=['scripts/aberdeen-init'],
+    package_data={'aberdeen': ['git_hooks/*']}
 )
