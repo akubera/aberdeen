@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+#
+# aberdeen-init
+#
+"""
+The program which a user may use to automatically create an Aberdeen blog with
+hooks and configuration files.
+"""
+
+def arguments(parser):
+    parser.add_argument("-i", "--interactive", dest="interactive", action="store_true", help="Run with program asking for help")
+    return parser.parse_args()
+
+
+def main():
+    from argparse import ArgumentParser
+    args = arguments(ArgumentParser())
+    print ("interactive? ", args.interactive)
+
+if __name__ == "__main__":
+    main()
