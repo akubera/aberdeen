@@ -36,12 +36,15 @@ CLASSIFIERS = [
 
 LICENSE = 'Apache 2.0'
 
+tar_url = 'https://github.com/akubera/aberdeen/archive/v%s.tar.gz' % (aberdeen.__version__)
+
 setup(
     name="aberdeen",
     packages=["aberdeen"],
     version=aberdeen.__version__,
     description=desc,
     url=aberdeen.__homepage__,
+    download_url=tar_url,
     author=aberdeen.__author__,
     author_email=aberdeen.__contact__,
     keywords=KEYWORDS,
