@@ -5,7 +5,7 @@ Simple python script for taking a directory of markdown files and
 generating/storing the backend of a blog.
 
 The goal is to enable quick editing of simple text-files and posting them to a
-database via a push to a git branch (default 'public').
+database via a push to a git branch (default 'publish').
 
 Upon running, a python JSON object is created from each file found. There is a
 markdown header extracted from the file indicating post title, date posted,
@@ -18,7 +18,7 @@ specified collection.
 This process is strictly a 'model' management system, any view and controller
 must be built/managed by you.
 
-(The name comes from the "Aberdeen" fish hook :fishing\_pole\_and\_fish:)
+(The name comes from the "Aberdeen" fish hook 🎣)
 
 Requirements
 ------------
