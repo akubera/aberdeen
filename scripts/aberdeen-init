@@ -9,6 +9,8 @@ hooks and configuration files.
 
 import sys, os
 import aberdeen
+from distutils.util import strtobool
+from shutil import rmtree as rmdir
 
 def arguments(parser):
     parser.add_argument("--defaults", dest="interactive", action="store_false", help="Run with program without asking for user configuration.")
@@ -47,57 +49,114 @@ def get_default_port(dbtype):
     return {
         'mongodb': '27017',
         'postgres': '5432',
-        'mariadb': '3307'
+        'mariadb': '3306',
+        'mysql': '3306'
     }.get(dbtype, None)
+
+def get_user_bool(prompt, default=None):
+    while True:
+        try:
+            res = strtobool(input(prompt))
+        except ValueError:
+            if default is not None:
+                return default
+            continue
+        return res
 
 def main():
     from argparse import ArgumentParser
     from configparser import ConfigParser, ExtendedInterpolation
+    from tempfile import TemporaryDirectory
     import subprocess
+
+    call = subprocess.check_output
 
     aberdeen_path = os.path.dirname(aberdeen.__file__)
     git_hook = lambda f: os.path.join(aberdeen_path, 'git_hooks', f)
 
     args = arguments(ArgumentParser())
+
+    config = ConfigParser()
+
+    # config dictionaries
+    c, db, ab = dict(), dict(), dict()
+
+    if 'VIRTUAL_ENV' in os.environ:
+        print("Virtual Environment (venv) detected!")
+        prompt = "Use the environment '%s' in config file? [Y/n] " % (os.environ['VIRTUAL_ENV'])
+        if get_user_bool(prompt, True):
+            ab['venv'] = os.environ['VIRTUAL_ENV']
+
+    if args.dir_name.endswith(".git"):
+        repo_name = args.dir_name
+        blog_name = args.dir_name[:-4]
+    else:
+        git_prompt = "Append '.git' to bare git repo '%s'? [Y/n] " % (args.dir_name)
+        if get_user_bool(git_prompt, True):
+            repo_name = args.dir_name + ".git"
+        else:
+            repo_name = args.dir_name
+        blog_name = args.dir_name
+
     try:
-        subprocess.check_call(["git", "init", "--bare", args.dir_name])
+        subprocess.check_call(["git", "init", "--bare", repo_name])
     except:
         fatal_err("`git init` returned an error")
         sys.exit(1)
 
-    # if os.path.exists(args.dir_name) and os.path.isdir(args.dir_name):
-    #     if os.listdir(args.dir_name) and not args.force:
-    #         fatal_err("directory '{}' exists and is not empty", args.dir_name)
-    #         sys.exit(1)
-    # elif os.path.isfile(args.dir_name):
-    #     fatal_err("file '{}' exists and is not directory", args.dir_name)
-    #     sys.exit(1)
+    os.chdir(repo_name)
+    repo_abs_path = os.getcwd()
 
-    config = ConfigParser()
-    # config.add_section('database')
-    # config['database']['xxx']
-    # db_config = config['database']
-
-    c, db = dict(), dict()
     db['type'] = prompt_user("Database type", 'mongodb')
     db['host'] = prompt_user("Database host", 'localhost')
     db['port'] = prompt_user("Database port", get_default_port(db['type']))
-    db['name'] = prompt_user("Database name", args.dir_name)
+    db['name'] = prompt_user("Database name", blog_name)
     db['blog_name'] = 'something'
 
+    ab['publish_branch'] = prompt_user("Publish branch name", 'publish')
+
+    with TemporaryDirectory() as tmpdir:
+
+        try:
+            call(["git", "clone", ".", tmpdir])
+        except:
+            fatal_err("git could not clone a temporary repository")
+
+        os.chdir(tmpdir)
+
+        try:
+            call(["git", "checkout", "-b", ab['publish_branch']])
+            mesg = 'The Initial Empty Commit'
+            call(["git", "commit", "--allow-empty", '-m', mesg])
+            print ('created publish branch:', ab['publish_branch'])
+        except:
+            warning("git could not initialize the repository branches")
+
+        # get the name of the working branch
+        working_branch = prompt_user("Working branch name", 'master')
+
+        if working_branch == ab['publish_branch']:
+            warning("Working branch name == 'publish' branch. Not recommended!")
+        else:
+            try:
+                call(["git", "checkout", "-b", working_branch])
+                print ("created working branch:", working_branch)
+            except:
+                warning("git could not create the working branch")
+        try:
+            call(["git", "push", "origin", ab['publish_branch'], working_branch])
+        except CalledProcessError:
+            warning("Could not save the branches, you must create them. :-(")
+
+    c['aberdeen'] = ab
     c['database'] = db
 
     config.read_dict(c)
 
-    # name = input("Database host [localhost]: ").strip()
-    # if not host: host = 'localhost'
-    # config.add_section('Section1')
-    # config.set('Section1', 'an_int', '15')
+    hook_name = lambda f: os.path.join(repo_abs_path, 'hooks', f)
 
-    hook_name = lambda f: os.path.join(args.dir_name, 'hooks', f)
-    #
     conf_filename = hook_name('aberdeen.cfg')
-    # os.path.join(args.dir_name, 'hooks', 'aberdeen.cfg')
+
     with open(conf_filename, 'w') as cfg_file:
         cfg_file.write("# Automatically generated by the aberdeen-init script")
         cfg_file.write("\n\n")

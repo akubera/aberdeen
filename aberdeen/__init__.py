@@ -13,16 +13,19 @@ __homepage__ = 'https://github.com/akubera/aberdeen'
 
 import sys
 
-from configparser import ConfigParser
-config = ConfigParser()
-config['mongo'] = {
-    'host': 'localhost',
-    'port': '27017',
-    'database': 'aberdeen_blog',
-    'collection': 'blog_posts'
-}
+def read_config(repo_path='.'):
+    from configparser import ConfigParser
+    config = ConfigParser()
+    config['database'] = {
+        'type': 'mongodb',
+        'host': 'localhost',
+        'port': '27017',
+        'database': 'aberdeen_blog',
+        'collection': 'blog_posts'
+    }
 
-config.read(['aberdeen.cfg'])
+    config.read(['aberdeen.cfg'])
+    return config
 
 def call_git(args, verbose=False):
     """

@@ -11,6 +11,7 @@ the generated blog posts.
 """
 
 import sys
+import aberdeen
 
 #print("===update===")
 #print ("Args:", sys.argv)

@@ -21,6 +21,7 @@ OPTIONAL_REQUIRES = {
 KEYWORDS = [
     'markdown',
     'blog',
+    'publishing',
     'nosql',
     'mongodb'
 ]
