@@ -2,7 +2,7 @@ Aberdeen
 ========
 
 Simple python script for taking a directory of markdown files and
-generating/storing the backend of a blog.œ
+generating/storing the backend of a blog.
 
 The goal is to enable quick editing of simple text-files and posting them to a
 database via a push to a git branch (default 'public').
@@ -18,16 +18,15 @@ specified collection.
 This process is strictly a 'model' management system, any view and controller
 must be built/managed by you.
 
-The name comes from the "Aberdeen" fish hook.
+(The name comes from the "Aberdeen" fish hook :fishing\_pole\_and\_fish:)
 
 Requirements
 ------------
 
--  `Python 3.4 <https://www.python.org/>`__
--  `Markdown <https://pythonhosted.org/Markdown>`__
--  **Supported Databases**
--  mongodb
-   - `asyncio\_mongo <https://pypi.python.org/pypi/asyncio_mongo>`__
+- `Python 3.4 <https://www.python.org/>`__
+- `Markdown <https://pythonhosted.org/Markdown>`__
+- **Supported Databases**
+    -  mongodb - `asyncio\_mongo <https://pypi.python.org/pypi/asyncio_mongo>`__
 
 Installation
 ------------
@@ -37,7 +36,7 @@ Copy the ``post-update``, ``aberdeen.py`` and config files to the directory
 specifications. This will be updated when uploaded to pypi.
 
 Server Setup
-~~~~~~~~~~~~
+------------
 
 On your server, create a bare git repository, something like 'blog\_data'. This
 will simply hold all your markdown (or maybe *other* type) files. Create a
@@ -72,11 +71,11 @@ information on how the metadata header works, `read this
 Aberdeen creates a python 'time' object from the 'date' attribute. It will try
 to be smart about the style of the date, and there are a few ways to interpret
 the datetime from the string, but it has to be accepted in some form or another
-by the `strptime function of python time library
+by the `strptime
 <https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior>`__
-The first way to work will be saved, so it rewards consistency. It is
-recommended you put in a time field if you care about that, else it will default
-to midnight of the determined date.
+function of python ‘time’ library. The first way to work will be saved, so it
+rewards consistency. It is recommended you put in a time field if you care about
+that, else it will default to midnight of the determined date.
 
 *Maybe this can be specified in the config file? (that's not implemented yet.)*
 
@@ -84,10 +83,8 @@ This kind of information is great for storing in NoSQL databases, so MongoDB is
 the only database currently supported. The content of the markdown is converted
 to HTML and added to the result as 'html\_content' field. The objects are sorted
 in terms of date and written to the database. The previous table or collection
-will dropped and the new items added. (***NO Guarentee*** that the items will be
+will dropped and the new items added. (***NO GUARANTEE*** that the items will be
 in the same order).
-
-
 
 Other Things
 ------------
