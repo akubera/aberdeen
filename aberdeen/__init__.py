@@ -88,6 +88,7 @@ def generate_from_markdown(src):
         else:
             res[key] = val
 
+    res['raw_content'] = src
     res['html_content'] = html
     if 'date' not in res:
         raise Exception("    "+REDERR+"No 'date' component found in post.")
