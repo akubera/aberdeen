@@ -168,12 +168,6 @@ def main():
             new_hook.write(u_hook.read())
     os.chmod(hook_name('update'), 0o750)
 
-    with open(hook_name('post-update'), 'w') as new_hook:
-        with open(git_hook('post-update'), 'r') as u_hook:
-            new_hook.write(u_hook.read())
-    os.chmod(hook_name('post-update'), 0o750)
-
-
 
 if __name__ == "__main__":
     main()
