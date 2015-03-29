@@ -9,8 +9,8 @@ hooks and configuration files.
 
 import sys, os
 import aberdeen
-from distutils.util import strtobool
 from shutil import rmtree as rmdir
+from aberdeen.utils.prompt import get_user_bool
 
 def arguments(parser):
     parser.add_argument("--defaults", dest="interactive", action="store_false", help="Run with program without asking for user configuration.")
@@ -53,16 +53,6 @@ def get_default_port(dbtype):
         'mysql': '3306'
     }.get(dbtype, None)
 
-def get_user_bool(prompt, default=None):
-    while True:
-        try:
-            res = strtobool(input(prompt))
-        except ValueError:
-            if default is not None:
-                return default
-            continue
-        return res
-
 def main():
     from argparse import ArgumentParser
     from configparser import ConfigParser, ExtendedInterpolation
@@ -89,14 +79,14 @@ def main():
 
     if args.dir_name.endswith(".git"):
         repo_name = args.dir_name
-        blog_name = args.dir_name[:-4]
+        blog_name = os.path.basename(args.dir_name[:-4])
     else:
         git_prompt = "Append '.git' to bare git repo '%s'? [Y/n] " % (args.dir_name)
         if get_user_bool(git_prompt, True):
             repo_name = args.dir_name + ".git"
         else:
             repo_name = args.dir_name
-        blog_name = args.dir_name
+        blog_name = os.path.basename(args.dir_name)
 
     try:
         subprocess.check_call(["git", "init", "--bare", repo_name])
