@@ -11,6 +11,8 @@ import sys, os
 import aberdeen
 from shutil import rmtree as rmdir
 from aberdeen.utils.prompt import (get_user_bool, prompt_user)
+from aberdeen.utils.error_messages import warning as warning_err
+from aberdeen.utils.error_messages import error as fatal_err
 
 def arguments(parser):
     parser.add_argument("--defaults", dest="interactive", action="store_false", help="Run with program without asking for user configuration.")
@@ -20,16 +22,6 @@ def arguments(parser):
 
 def err_str(err, *args):
     return err.format(*args)
-
-def warning_err(err, *args):
-    from termcolor2 import c
-    fatal = c("warning:").yellow + " "
-    print (fatal + err.format(*args), file=sys.stderr)
-
-def fatal_err(err, *args):
-    from termcolor2 import c
-    fatal = c("Error:").red + " "
-    print (fatal + err.format(*args), file=sys.stderr)
 
 def get_default_port(dbtype):
     return {

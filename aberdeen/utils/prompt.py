@@ -6,7 +6,7 @@ Utility functions which prompt the user for input.
 """
 
 from distutils.util import strtobool
-
+from .error_messages import warning
 
 def get_user_bool(prompt, default=None):
     """
@@ -42,6 +42,6 @@ def prompt_user(name, default=None, do_strip=True):
         res = res.strip()
     if not res:
         if default is None:
-            warning_err("Empty string given with no defaults.")
+            warning("Empty string given with no defaults.")
         res = default
     return res
