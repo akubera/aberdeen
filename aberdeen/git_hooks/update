@@ -10,18 +10,35 @@ repository. Also, add a configuration file to tell aberdeen where to send
 the generated blog posts.
 """
 
-import sys
+import sys, os
 
-#print("===update===")
+from configparser import ConfigParser
+
+# expect configuration to be in same directory
+config = ConfigParser()
+config.read(["aberdeen.cfg"])
+
+cfg_aberdeen = config["aberdeen"]
+
+if 'venv' in cfg_aberdeen:
+    p = os.path.join(cfg_aberdeen['venv'], 'lib', 'python3.4', 'site-packages')
+    sys.path.insert(1, p)
+
+import aberdeen
+
 #print ("Args:", sys.argv)
 
 branch, old_commit, new_commit = sys.argv[1:4]
 
-if branch.split('/')[-1] == 'publish':
-    print ("Pushing update to publish branch. Inspecting files:")
+if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
+    print("===update===")
+    print("Pushing update to publish branch. Inspecting files:")
     import aberdeen
     from markdown import Markdown
     from termcolor2 import c
+
+    markdown_suffixes = ['.md','.markdown']
+    html_suffixes = ['.html','.htm']
 
     # Gets filename of changed files
     diff_cmd = "diff --name-only %s %s -- *.md" % (old_commit, new_commit)
@@ -29,25 +46,33 @@ if branch.split('/')[-1] == 'publish':
 
     # Gets the filename and 'blob id' of files which have been changed
     ls_tree_cmd = 'ls-tree --full-name -r %s' % (new_commit)
-    allfiles = aberdeen.call_git(ls_tree_cmd).split('\n')[:-1]
+    all_files = aberdeen.call_git(ls_tree_cmd).split('\n')[:-1]
+
+    files = [
+        {'name': line.split()[3], 'blob': line.split()[2]}
+        for line in all_files.split('\n')
+    ]
+
     files_changed = [
         {'name': line.split()[3], 'blob': line.split()[2]}
-        for line in allfiles if line.split('\t')[-1] in changed_filenames
+        for line in all_files if line.split('\t')[-1] in changed_filenames
     ]
-    # print (files_changed)
+
     errors = []
     for file in files_changed:
-        print("Testing", file['name'], end=' ')
-        cat_cmd = "cat-file blob " + file['blob']
-        markdown = aberdeen.call_git(cat_cmd.split())
-    #    print (" contents:\n----\n", markdown, "----")
-        try:
-            aberdeen.generate_from_markdown(markdown)
-            print(c('✓').green)
-        except Exception as err:
-            print(c('✗').red)
-            err = "  %s\n%s\n" % (file['name'], str(err))
-            errors.append(err)
+        filename = file['name']
+        blob_id = file['blob']
+        print("Testing", filename, end=' ')
+        cat_cmd = "cat-file blob " + blob_id
+        contents = aberdeen.call_git(cat_cmd.split())
+        if any(map(filename.endswith, markdown_suffix)):
+            try:
+                aberdeen.generate_from_markdown(contents)
+                print(c('✓').green)
+            except Exception as err:
+                print(c('✗').red)
+                err = "  %s\n%s\n" % (file['name'], str(err))
+                errors.append(err)
 
     if errors:
         print("Errors:")
@@ -57,3 +82,23 @@ if branch.split('/')[-1] == 'publish':
         sys.exit(1)
 
     print ("No Errors found, continuing.")
+
+    posts = []
+    for file in files:
+        filename = file['name']
+        blob_id = file['blob']
+        if any(map(filename.endswith, markdown_suffix)):
+            contents = ab.call_git(['cat-file', 'blob', blob_id])
+            posts.append(aberdeen.generate_from_markdown(contents))
+        elif any(map(filename.endswith, html_suffix)):
+            pass
+
+    print("[update] Generated %d posts" % (len(posts)))
+    try:
+        aberdeen.upload_posts_to_database(posts, cfg_database)
+    except:
+        err = c("Error:").red
+        print("[update] "+err+" Could not upload files to database.")
+        sys.exit(1)
+
+    print("[update] :-) Successfully uploaded posts to database ❁")
