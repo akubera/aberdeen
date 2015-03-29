@@ -10,7 +10,7 @@ hooks and configuration files.
 import sys, os
 import aberdeen
 from shutil import rmtree as rmdir
-from aberdeen.utils.prompt import get_user_bool
+from aberdeen.utils.prompt import (get_user_bool, prompt_user)
 
 def arguments(parser):
     parser.add_argument("--defaults", dest="interactive", action="store_false", help="Run with program without asking for user configuration.")
@@ -30,20 +30,6 @@ def fatal_err(err, *args):
     from termcolor2 import c
     fatal = c("Error:").red + " "
     print (fatal + err.format(*args), file=sys.stderr)
-
-def prompt_user(name, default=None, do_strip=True):
-    request = name
-    if default is not None:
-        request += " [{}]".format(default)
-    request += ": "
-    res = input(request)
-    if do_strip:
-        res = res.strip()
-    if not res:
-        if default is None:
-            warning_err("Empty string given with no defaults.")
-        res = default
-    return res
 
 def get_default_port(dbtype):
     return {
