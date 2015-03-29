@@ -14,10 +14,13 @@ import sys, os
 
 from configparser import ConfigParser
 
+dirname = os.path.basename(os.path.dirname(os.path.abspath(__file__))).strip()
+
 # expect configuration to be in same directory
-if os.path.dirname(__file__) is not 'hooks':
+if dirname != 'hooks':
     print(("ERROR: "
-           "The update hook is not in a directory named 'hooks'. Aborting."),
+           "The update hook is not in a directory named 'hooks', rather it's in"
+           " \"%s\". Aborting." % (dirname)),
            file=sys.stderr)
     sys.exit(1)
 
@@ -29,17 +32,20 @@ if not os.path.exists("hooks/aberdeen.cfg"):
     sys.exit(1)
 
 try:
-    file = open("hooks/aberdeen.cfg", 'r')
+    cfg_file = open("hooks/aberdeen.cfg", 'r')
 except Exception as err:
     print(("ERROR: "
-           "Could not open  aberdeen configuration file."),
+           "Could not open aberdeen configuration file."),
            err, file=sys.stderr)
     sys.exit(1)
 
 config = ConfigParser()
-config.read(["aberdeen.cfg"])
+config.read_file(cfg_file)
+
+cfg_file.close()
 
 cfg_aberdeen = config["aberdeen"]
+cfg_database = config["database"]
 
 if 'venv' in cfg_aberdeen:
     p = os.path.join(cfg_aberdeen['venv'], 'lib', 'python3.4', 'site-packages')
@@ -111,8 +117,8 @@ if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
     for file in files:
         filename = file['name']
         blob_id = file['blob']
-        if any(map(filename.endswith, markdown_suffix)):
-            contents = ab.call_git(['cat-file', 'blob', blob_id])
+        if any(map(filename.endswith, markdown_suffixes)):
+            contents = aberdeen.call_git(['cat-file', 'blob', blob_id])
             posts.append(aberdeen.generate_from_markdown(contents))
         elif any(map(filename.endswith, html_suffixes)):
             pass
@@ -120,9 +126,10 @@ if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
     print("[update] Generated %d posts" % (len(posts)))
     try:
         aberdeen.upload_posts_to_database(posts, cfg_database)
-    except:
-        err = c("Error:").red
-        print("[update] "+err+" Could not upload files to database.")
+    except Exception as err:
+        error = c("Error:").red
+        print("[update] "+error+" Could not upload files to database.")
+        print("[update]", err)
         sys.exit(1)
 
     print("[update] :-) Successfully uploaded posts to database ❁")

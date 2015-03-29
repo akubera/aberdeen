@@ -107,7 +107,7 @@ def upload_posts_to_mongo(posts, cfg):
     else:
         host = cfg.get('host', '127.0.0.1')
     mongo = MongoClient(host, int(cfg['port']), tz_aware=True)
-    db_name = cfg['database']
+    db_name = cfg['name']
     coll_name = cfg['post_collection']
     db = mongo[db_name]
     db[coll_name].find()
