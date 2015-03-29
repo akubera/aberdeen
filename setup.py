@@ -41,7 +41,7 @@ tar_url = 'https://github.com/akubera/aberdeen/archive/v%s.tar.gz' % (aberdeen._
 
 setup(
     name="aberdeen",
-    packages=["aberdeen"],
+    packages=["aberdeen", "aberdeen.utils"],
     version=aberdeen.__version__,
     description=desc,
     url=aberdeen.__homepage__,
@@ -54,6 +54,6 @@ setup(
     platforms='any',
     install_requires=REQUIRES,
     extras_require=OPTIONAL_REQUIRES,
-    scripts=['scripts/aberdeen-init'],
+    scripts=['scripts/aberdeen-init', 'scripts/aberdeen-update'],
     package_data={'aberdeen': ['git_hooks/*']}
 )
