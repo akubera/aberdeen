@@ -51,7 +51,7 @@ setup(
     keywords=KEYWORDS,
     license=LICENSE,
     classifiers=CLASSIFIERS,
-    platform='any',
+    platforms='any',
     install_requires=REQUIRES,
     extras_require=OPTIONAL_REQUIRES,
     scripts=['scripts/aberdeen-init'],
