@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+#
+# aberdeen-update-hook
+#
+"""
+This program prints the aberdeen update git-hook to standard output.
+"""
+
+import aberdeen
+import os
+
+aberdeen_path = os.path.dirname(aberdeen.__file__)
+update_filename = os.path.join(aberdeen_path, 'git_hooks', 'update')
+
+with open(update_filename, 'r') as update_hook:
+    print(update_hook.read())
