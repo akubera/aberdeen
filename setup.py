@@ -54,6 +54,6 @@ setup(
     platforms='any',
     install_requires=REQUIRES,
     extras_require=OPTIONAL_REQUIRES,
-    scripts=['scripts/aberdeen-init', 'scripts/aberdeen-update'],
+    scripts=['scripts/aberdeen-init', 'scripts/aberdeen-update-hook'],
     package_data={'aberdeen': ['git_hooks/*']}
 )
