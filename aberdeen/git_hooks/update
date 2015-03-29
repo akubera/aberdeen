@@ -14,7 +14,20 @@ import sys, os
 
 from configparser import ConfigParser
 
+from aberdeen.utils.error_messages import error
+
 # expect configuration to be in same directory
+if dirname(__file__) != 'hooks':
+    error("The update hook is not in a directory named 'hooks'. Aborting.")
+    sys.exit(1)
+
+os.chdir(os.path.dirname(__file__))
+
+if not os.path.exists("aberdeen.cfg"):
+    error(("No aberdeen configuration file found. Please create one and add to "
+           "the server's 'hooks' directory. Aborting."))
+    sys.exit(1)
+
 config = ConfigParser()
 config.read(["aberdeen.cfg"])
 
