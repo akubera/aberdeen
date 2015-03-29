@@ -6,7 +6,7 @@
 A static file CMS generator
 """
 __author__ = "Andrew Kubera"
-__version__ = "0.2.3.2"
+__version__ = "0.3.0"
 __license__ = "Apache 2.0"
 __contact__ = 'andrew.kubera@gmail.com'
 __homepage__ = 'https://github.com/akubera/aberdeen'
@@ -107,7 +107,7 @@ def upload_posts_to_mongo(posts, cfg):
     else:
         host = cfg.get('host', '127.0.0.1')
     mongo = MongoClient(host, int(cfg['port']), tz_aware=True)
-    db_name = cfg['database']
+    db_name = cfg['name']
     coll_name = cfg['post_collection']
     db = mongo[db_name]
     db[coll_name].find()
