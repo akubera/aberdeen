@@ -15,7 +15,7 @@ import sys, os
 from configparser import ConfigParser
 
 # expect configuration to be in same directory
-if dirname(__file__) != 'hooks':
+if os.path.dirname(__file__) is not 'hooks':
     print(("ERROR: "
            "The update hook is not in a directory named 'hooks'. Aborting."),
            file=sys.stderr)
