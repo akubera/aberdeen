@@ -93,7 +93,7 @@ def generate_from_markdown(src):
         raise Exception("    "+REDERR+"No 'date' component found in post.")
     return res
 
-def upload_posts_to_database(posts):
+def upload_posts_to_mongo(posts, cfg):
     """
     Uploads the list of items to the database as specified by the configuration
     file.
@@ -101,14 +101,13 @@ def upload_posts_to_database(posts):
     """
     from pymongo import MongoClient
     # from pprint import pprint
-    cfg = config['mongo']
     if 'username' in cfg and 'password' in cfg:
         host = '%s:%s@%s' % map(cfg.get, ['username', 'password', 'host'])
     else:
         host = cfg.get('host', '127.0.0.1')
-    mongo = MongoClient(host, int(cfg.get('port')), tz_aware=True)
-    db_name = cfg.get('database')
-    coll_name = cfg['collection']
+    mongo = MongoClient(host, int(cfg['port']), tz_aware=True)
+    db_name = cfg['database']
+    coll_name = cfg['post_collection']
     db = mongo[db_name]
     db[coll_name].find()
     # pprint([i for i in post_ids])
@@ -116,6 +115,21 @@ def upload_posts_to_database(posts):
     collection = db[coll_name]
     collection.insert(posts)
     # pprint(post_ids)
+
+def upload_posts_to_database(posts, cfg):
+    """
+    Sends the posts to a database - determined by the configuration
+    """
+    stder = sys.stderr
+    if 'type' not in cfg:
+        print ("ERROR - database type not specified in config", file=stder)
+        sys.exit(1)
+
+    if cfg['type'] == 'mongodb':
+        upload_posts_to_mongo(posts, cfg)
+    else:
+        print ("ERROR - unkown database type: '%s'" % (cfg['type']), file=stder)
+        sys.exit(1)
 
 
 def main(args):

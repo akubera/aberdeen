@@ -10,15 +10,28 @@ repository. Also, add a configuration file to tell aberdeen where to send
 the generated blog posts.
 """
 
-import sys
+import sys, os
+
+from configparser import ConfigParser
+
+# expect configuration to be in same directory
+config = ConfigParser()
+config.read(["aberdeen.cfg"])
+
+cfg_aberdeen = config["aberdeen"]
+
+if 'venv' in cfg_aberdeen:
+    p = os.path.join(cfg_aberdeen['venv'], 'lib', 'python3.4', 'site-packages')
+    sys.path.insert(1, p)
+
 import aberdeen
 
-#print("===update===")
 #print ("Args:", sys.argv)
 
 branch, old_commit, new_commit = sys.argv[1:4]
 
-if branch.split('/')[-1] == 'publish':
+if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
+    print("===update===")
     print ("Pushing update to publish branch. Inspecting files:")
     import aberdeen
     from markdown import Markdown

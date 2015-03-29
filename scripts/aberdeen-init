@@ -111,7 +111,7 @@ def main():
     db['host'] = prompt_user("Database host", 'localhost')
     db['port'] = prompt_user("Database port", get_default_port(db['type']))
     db['name'] = prompt_user("Database name", blog_name)
-    db['blog_name'] = 'something'
+    db['post_collection'] =  prompt_user("Table/Collection name", 'posts')
 
     ab['publish_branch'] = prompt_user("Publish branch name", 'publish')
 
