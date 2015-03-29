@@ -21,13 +21,19 @@ if os.path.dirname(__file__) is not 'hooks':
            file=sys.stderr)
     sys.exit(1)
 
-os.chdir(os.path.dirname(__file__))
-
-if not os.path.exists("aberdeen.cfg"):
+if not os.path.exists("hooks/aberdeen.cfg"):
     print(("ERROR: "
            "No aberdeen configuration file found. Please create one and add to "
            "the server's 'hooks' directory. Aborting."),
            file=sys.stderr)
+    sys.exit(1)
+
+try:
+    file = open("hooks/aberdeen.cfg", 'r')
+except Exception as err:
+    print(("ERROR: "
+           "Could not open  aberdeen configuration file."),
+           err, file=sys.stderr)
     sys.exit(1)
 
 config = ConfigParser()
@@ -55,7 +61,7 @@ if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
 
     # Gets filename of changed files
     diff_cmd = "diff --name-only %s %s -- *.md" % (old_commit, new_commit)
-    changed_filenames = aberdeen.call_git(diff_cmd.split()).strip()
+    changed_filenames = aberdeen.call_git(diff_cmd).strip()
 
     # Gets the filename and 'blob id' of files which have been changed
     ls_tree_cmd = 'ls-tree --full-name -r %s' % (new_commit)
@@ -63,13 +69,18 @@ if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
 
     files = [
         {'name': line.split()[3], 'blob': line.split()[2]}
-        for line in all_files.split('\n')
+        for line in all_files
     ]
 
     files_changed = [
         {'name': line.split()[3], 'blob': line.split()[2]}
         for line in all_files if line.split('\t')[-1] in changed_filenames
     ]
+
+    # We must force the use of utf so we get cool ✓ characters!
+    if sys.getdefaultencoding() is not 'utf-8':
+        import codecs
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
     errors = []
     for file in files_changed:
@@ -78,7 +89,7 @@ if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
         print("Testing", filename, end=' ')
         cat_cmd = "cat-file blob " + blob_id
         contents = aberdeen.call_git(cat_cmd.split())
-        if any(map(filename.endswith, markdown_suffix)):
+        if any(map(filename.endswith, markdown_suffixes)):
             try:
                 aberdeen.generate_from_markdown(contents)
                 print(c('✓').green)
@@ -103,7 +114,7 @@ if branch.split('/')[-1] == cfg_aberdeen['publish_branch']:
         if any(map(filename.endswith, markdown_suffix)):
             contents = ab.call_git(['cat-file', 'blob', blob_id])
             posts.append(aberdeen.generate_from_markdown(contents))
-        elif any(map(filename.endswith, html_suffix)):
+        elif any(map(filename.endswith, html_suffixes)):
             pass
 
     print("[update] Generated %d posts" % (len(posts)))
