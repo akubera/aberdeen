@@ -10,7 +10,8 @@ desc = "Conversion from markdown files to database entries to use as the backend
 
 REQUIRES = [
     'emoji',
-    'termcolor2'
+    'termcolor2',
+    'python-dateutil'
 ]
 
 OPTIONAL_REQUIRES = {

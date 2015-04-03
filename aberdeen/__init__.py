@@ -6,7 +6,7 @@
 A static file CMS generator
 """
 __author__ = "Andrew Kubera"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __license__ = "Apache 2.0"
 __contact__ = 'andrew.kubera@gmail.com'
 __homepage__ = 'https://github.com/akubera/aberdeen'
@@ -43,23 +43,6 @@ def call_git(args, verbose=False):
         print ("[call_git] >> {}".format(res))
     return res.decode()
 
-
-def determine_time(timestr):
-    """Deterimes a time based on a string."""
-    from time import strptime
-    formats = ["%b %d, %Y"]
-    res = None
-    for frm in formats:
-        try:
-            res = strptime(timestr, frm)
-        except ValueError:
-            continue
-    if not res:
-        raise "Time value could not be determined from time string '%s'" % \
-            (timestr)
-    return res
-
-
 def generate_from_markdown(src):
     """
     Generates a blogpost from a markdown script, src.
@@ -67,7 +50,7 @@ def generate_from_markdown(src):
     @return dict: Dictionary with header objects and 'html_content'
     """
     from termcolor2 import c
-
+    from dateutil.parser import parse as parse_datetime
     REDERR = c('ERROR: ').red
 
     from markdown import Markdown
@@ -90,8 +73,15 @@ def generate_from_markdown(src):
 
     res['raw_content'] = src
     res['html_content'] = html
-    if 'date' not in res:
+
+    try:
+        res['date'] = parse_datetime(res['date']).isoformat()
+    except KeyError:
         raise Exception("    "+REDERR+"No 'date' component found in post.")
+    except ValueError:
+        err = "    "+REDERR+"Could not interprete 'date' value into a date."
+        raise Exception(err)
+
     return res
 
 def upload_posts_to_mongo(posts, cfg):
