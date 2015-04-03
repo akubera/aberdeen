@@ -6,7 +6,7 @@
 A static file CMS generator
 """
 __author__ = "Andrew Kubera"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __license__ = "Apache 2.0"
 __contact__ = 'andrew.kubera@gmail.com'
 __homepage__ = 'https://github.com/akubera/aberdeen'
