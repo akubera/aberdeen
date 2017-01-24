@@ -5,13 +5,17 @@
 """
 A static file CMS generator
 """
-__author__ = "Andrew Kubera"
-__version__ = "0.4.0"
-__license__ = "Apache 2.0"
-__contact__ = 'andrew.kubera@gmail.com'
-__homepage__ = 'https://github.com/akubera/aberdeen'
 
 import sys
+
+from .__meta__ import (
+    author as __author__,
+    author_email as __contact__,
+    date as __date__,
+    version as __version__,
+    license as __license__,
+    url as __homepage__,
+)
 
 def read_config(repo_path='.'):
     from configparser import ConfigParser

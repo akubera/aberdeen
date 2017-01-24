@@ -3,8 +3,10 @@
 #
 """Aberdeen Setup Script"""
 
-from setuptools import setup
-import aberdeen
+from setuptools import setup, find_packages
+from importlib.machinery import SourceFileLoader
+
+meta = SourceFileLoader("meta", "aberdeen/__meta__.py").load_module()
 
 desc = "Conversion from markdown files to database entries to use as the backend of a blog"
 
@@ -42,7 +44,7 @@ tar_url = 'https://github.com/akubera/aberdeen/archive/v%s.tar.gz' % (aberdeen._
 
 setup(
     name="aberdeen",
-    packages=["aberdeen", "aberdeen.utils"],
+    packages=find_packages(exclude=['test']),
     version=aberdeen.__version__,
     description=desc,
     url=aberdeen.__homepage__,
