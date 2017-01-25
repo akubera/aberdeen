@@ -9,6 +9,14 @@ from importlib.machinery import SourceFileLoader
 
 desc = "Conversion from markdown files to database entries to use as the backend of a blog"
 
+
+NAME = "aberdeen"
+
+CONSOLE_SCRIPTS = [
+    'aberdeen-init = aberdeen.cli.init:main',
+    'aberdeen-update-hook = aberdeen.cli.update_hook:main'
+]
+
 REQUIRES = [
     'emoji',
     'termcolor2',
@@ -31,13 +39,12 @@ KEYWORDS = [
 CLASSIFIERS = [
     "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3.6",
     "Topic :: Utilities",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "License :: OSI Approved :: Apache Software License"
 ]
 
-LICENSE = 'Apache 2.0'
 
 meta = SourceFileLoader("meta", "aberdeen/__meta__.py").load_module()
 
@@ -45,7 +52,7 @@ tar_url = 'https://github.com/akubera/aberdeen/archive/v%s.tar.gz' % (meta.versi
 
 
 setup(
-    name="aberdeen",
+    name=NAME,
     packages=find_packages(exclude=['test']),
     version=meta.version,
     description=desc,
@@ -54,11 +61,13 @@ setup(
     author=meta.author,
     author_email=meta.author_email,
     keywords=KEYWORDS,
-    license=LICENSE,
+    license=meta.license,
     classifiers=CLASSIFIERS,
     platforms='any',
     install_requires=REQUIRES,
     extras_require=OPTIONAL_REQUIRES,
-    scripts=['scripts/aberdeen-init', 'scripts/aberdeen-update-hook'],
+    entry_points={
+        'console_scripts': CONSOLE_SCRIPTS,
+    },
     package_data={'aberdeen': ['git_hooks/*']}
 )

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# aberdeen-init
+# aberdeen/cli/init.py
 #
 """
 The program which a user may use to automatically create an Aberdeen blog with
