@@ -17,6 +17,8 @@ from .__meta__ import (
     url as __homepage__,
 )
 
+from . import cli, utils
+
 def read_config(repo_path='.'):
     from configparser import ConfigParser
     config = ConfigParser()
@@ -115,24 +117,12 @@ def upload_posts_to_database(posts, cfg):
     """
     Sends the posts to a database - determined by the configuration
     """
-    stder = sys.stderr
     if 'type' not in cfg:
-        print ("ERROR - database type not specified in config", file=stder)
+        sys.stderr.write("ERROR - database type not specified in config")
         sys.exit(1)
 
     if cfg['type'] == 'mongodb':
         upload_posts_to_mongo(posts, cfg)
     else:
-        print ("ERROR - unkown database type: '%s'" % (cfg['type']), file=stder)
+        sys.stderr.write("ERROR - unkown database type: '%s'" % (cfg['type']))
         sys.exit(1)
-
-
-def main(args):
-    """The 'main' function called when executing aberdeen"""
-    if len(args) == 0:
-        print ("Aberdeen!!")
-    else:
-        pass
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
