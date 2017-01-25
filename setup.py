@@ -45,6 +45,14 @@ CLASSIFIERS = [
     "License :: OSI Approved :: Apache Software License"
 ]
 
+TESTS_REQUIRE = [
+    'pytest',
+    'pytest-asyncio',
+]
+
+SETUP_REQUIRES = [
+    'pytest-runner',
+]
 
 meta = SourceFileLoader("meta", "aberdeen/__meta__.py").load_module()
 
@@ -66,6 +74,8 @@ setup(
     platforms='any',
     install_requires=REQUIRES,
     extras_require=OPTIONAL_REQUIRES,
+    tests_require=TESTS_REQUIRE,
+    setup_requires=SETUP_REQUIRES,
     entry_points={
         'console_scripts': CONSOLE_SCRIPTS,
     },
