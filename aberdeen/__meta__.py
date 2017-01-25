@@ -4,7 +4,7 @@
 
 version_info = (0, 4, 1)
 version = '.'.join(map(str, version_info))
-date = 'Jan 24, 2017'
+date = 'Jan 25, 2017'
 
 author = "Andrew Kubera"
 license = "Apache 2.0"
