@@ -2,7 +2,7 @@
 # aberdeen/__meta__.py
 #
 
-version_info = (0, 4, 1)
+version_info = (0, 5, 0, 'dev0')
 version = '.'.join(map(str, version_info))
 date = 'Jan 25, 2017'
 
